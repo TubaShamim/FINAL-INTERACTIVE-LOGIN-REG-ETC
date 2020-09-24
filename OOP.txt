@@ -1,0 +1,168 @@
+#include <iostream>
+using namespace std;
+#include <fstream>
+#include <string>
+#include <limits.h>
+
+class user {
+	public:
+		char choice1;		
+		string newpass;
+		fstream usernames;
+		fstream pswd;
+		fstream npswd;
+		fstream rnusernames;
+		fstream rnpass;
+		fstream rmaide;
+};
+
+class olduser : public user {
+	private:
+	string temp;
+	string temp1;
+	string temp2;
+	string username;
+	string userpass;
+	string newuserpass;
+	string loginyn;
+	string mynewpass;
+
+	public:
+		int checkusername(){
+		usernames.open("names.txt");
+		cout << "\nplease enter your username   ";
+		cin >> username; 
+		while ((usernames >> temp)) { 
+			if (temp.compare(username) == 0) {
+				usernames.close();
+				return 1;
+			}
+		}
+		usernames.close();
+		return 0;
+		}
+		
+		int checkpassword(){
+		cout<<"please enter your password   ";
+		cin>>userpass;
+		pswd.open("pass.txt");
+			while (pswd >> temp1) { 
+				if (temp1.compare(userpass) == 0){
+					cout<<"\n[ "<<username<<" ] having password [ "<<userpass<<" ] has been found in the database.\n\n";
+					pswd.close();
+					return 1;
+				}
+			}
+		pswd.close();
+		return 0;
+		}
+		int checknewpassword(){
+		cout<<"please enter your password   ";
+		cin>>newuserpass;
+		npswd.open("newpass.txt");
+			while (npswd >> temp2) { 
+				if (temp2.compare(newuserpass) == 0){
+					cout<<"Congratulations!!! You have successfully logged in with your new password.";
+					npswd.close();
+					return 1;
+				}
+				else{
+					cout<<"ACCESS DENIED";
+				}
+			}
+		npswd.close();
+		return 0;
+		}
+		
+		int creatnewpass(){
+		cout<<"Password: ";
+		cin>>mynewpass;
+		npswd.open("newpass.txt");
+		npswd<<mynewpass;
+		npswd.close();
+			cout<<"\nLogin now? (y/n) ";
+		cin>>loginyn;
+			if(loginyn=="y"){
+				cout<<"\n        [LOGIN PROCESS STARTING...]\n";
+				checkusername();
+				checknewpassword();
+			}
+		return 0;
+		}
+		private:
+};
+
+class newuser :  public user {
+	private:
+	string nusername;
+	string rpass;
+	string maiden;
+
+	public:
+		void askusername(){
+			cout<<"\nUsername: ";
+			cin>>nusername;
+			rnusernames.open("newnames.txt");
+			rnusernames<<nusername;
+			rnusernames.close();
+		}
+
+		void askuserpass(){
+			cout<<"Password: ";
+			cin>>rpass;
+			rnpass.open("newpass.txt");
+			rnpass<<rpass;
+			rnpass.close();
+		}
+
+		void askMMN(){
+			cout<<"Mother's maiden name: ";
+			cin>>maiden;
+			rmaide.open("maidennames.txt");
+			rmaide<<maiden;
+			rmaide.close();
+		}
+};
+
+int main() {
+newuser r;
+user u;   
+olduser verify; 
+int attempts, success;
+cout<<"\nAre you a new user? (y/n) ";
+cin>>u.choice1;
+	if (u.choice1 == 'n'){
+		for (attempts = 1; attempts < 4; attempts++){
+			success = verify.checkusername();
+				if (success == 1) { 
+					break; 
+				}
+			}
+		if (success == 0){
+			cout<<"\nACCESS DENIED\n";
+			cin.ignore();
+			abort();
+		}
+		verify.checkpassword();
+		cout<<"would you like to create a new password? (y/n) ";
+		cin>>u.newpass;
+			if (u.newpass=="y"){
+				verify.creatnewpass();
+			}
+			else if (u.newpass=="n"){
+				cin.ignore();
+				abort();
+			}
+	}
+	else if (u.choice1 == 'y'){
+		r.askusername();
+		r.askuserpass();
+		r.askMMN();
+		cin.ignore();
+		abort();
+	}
+	else {
+		cout<<"Error";
+	}
+return 0;
+}
